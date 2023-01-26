@@ -29,18 +29,18 @@ func App(data []Coin, converter func(string, string) float64) {
 	label := widget.NewLabel("Selecione uma moeda.")
 
 	label.Alignment = fyne.TextAlignCenter
-	input_value := widget.NewEntry()
-	input_value.SetPlaceHolder("Valor")
-	label_result := widget.NewLabel("Resultado")
-	new_window := container.NewGridWithRows(3, input_value, label_result, widget.NewButton("Converter", func() {
-		label_result.SetText(fmt.Sprintf("%f", converter(coin, input_value.Text)))
+	inputValue := widget.NewEntry()
+	inputValue.SetPlaceHolder("Valor")
+	labelResult := widget.NewLabel("Resultado")
+	newWindow := container.NewGridWithRows(3, inputValue, labelResult, widget.NewButton("Converter", func() {
+		labelResult.SetText(fmt.Sprintf("%f", converter(coin, inputValue.Text)))
 	}))
 	//icon := widget.NewIcon(nil)
 	button := widget.NewButtonWithIcon("", nil, func() {
 		w := fyne.CurrentApp().NewWindow("Info")
 		w.Resize(fyne.NewSize(380, 280))
 		w.SetTitle(fmt.Sprintf("BTC -> %v", coin))
-		w.SetContent(new_window)
+		w.SetContent(newWindow)
 		w.Show()
 	})
 	button.Hidden = true
@@ -71,6 +71,8 @@ func App(data []Coin, converter func(string, string) float64) {
 		//icon.SetResource(nil)
 		button.SetIcon(nil)
 		button.Hidden = true
+		labelResult.SetText("Resultado")
+		inputValue.SetText("")
 		coin = ""
 	}
 
