@@ -18,7 +18,9 @@ type Coin struct {
 
 // var data = []string{"a", "string", "list"}
 
-func App(data []Coin) {
+var coin = ""
+
+func App(data []Coin, converter func(string, string) float64) {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("BTC -> Moedas")
 
@@ -27,8 +29,22 @@ func App(data []Coin) {
 	label := widget.NewLabel("Selecione uma moeda.")
 
 	label.Alignment = fyne.TextAlignCenter
-	icon := widget.NewIcon(nil)
-	hbox := container.NewHBox(icon, label)
+	input_value := widget.NewEntry()
+	input_value.SetPlaceHolder("Valor")
+	label_result := widget.NewLabel("Resultado")
+	new_window := container.NewGridWithRows(3, input_value, label_result, widget.NewButton("Converter", func() {
+		label_result.SetText(fmt.Sprintf("%f", converter(coin, input_value.Text)))
+	}))
+	//icon := widget.NewIcon(nil)
+	button := widget.NewButtonWithIcon("", nil, func() {
+		w := fyne.CurrentApp().NewWindow("Info")
+		w.Resize(fyne.NewSize(380, 280))
+		w.SetTitle(fmt.Sprintf("BTC -> %v", coin))
+		w.SetContent(new_window)
+		w.Show()
+	})
+	button.Hidden = true
+	hbox := container.NewHBox(button, label)
 
 	list := widget.NewList(
 		func() int {
@@ -45,11 +61,17 @@ func App(data []Coin) {
 
 	list.OnSelected = func(id widget.ListItemID) {
 		label.SetText(fmt.Sprintf("Moeda: %v\nCompra: %v\nVenda: %v\n", data[id].Symbol, data[id].Buy, data[id].Sell))
-		icon.SetResource(theme.InfoIcon())
+		//icon.SetResource(theme.InfoIcon())
+		button.Hidden = false
+		button.SetIcon(theme.InfoIcon())
+		coin = data[id].Symbol
 	}
 	list.OnUnselected = func(id widget.ListItemID) {
 		label.SetText("Selecione uma moeda.")
-		icon.SetResource(nil)
+		//icon.SetResource(nil)
+		button.SetIcon(nil)
+		button.Hidden = true
+		coin = ""
 	}
 
 	listView := container.NewHSplit(list, container.NewCenter(hbox))
